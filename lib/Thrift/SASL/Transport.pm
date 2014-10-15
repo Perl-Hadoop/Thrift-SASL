@@ -214,7 +214,7 @@ sub readAll {
 
 1;
 
-#ABSTRACT: Client library for Hadoop WebHDFS and HttpFs, with Kerberos support
+#ABSTRACT: Thrift Transport allowing Kerberos auth/encryption through GSSAPI
 
 =head1 SYNOPSIS
 
