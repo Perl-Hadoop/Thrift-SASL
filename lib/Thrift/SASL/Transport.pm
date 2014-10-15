@@ -1,12 +1,10 @@
 package Thrift::SASL::Transport;
 
-# Based on the pyhs2 python module by Brad Ruderman [ https://github.com/BradRuderman/pyhs2 ]
-#
-# Initial version developped by Vikentiy Fesunov @booking.com
-
 use strict;
 use warnings;
 use Data::Dumper;
+
+# VERSION
 
 # Nasty hack to make the Thrift libs handle the extra 4-bytes
 # header put by GSSAPI in front of unencoded (auth only) replies
@@ -214,5 +212,46 @@ sub readAll {
     return $ret;
 }
 
-
 1;
+
+#ABSTRACT: Client library for Hadoop WebHDFS and HttpFs, with Kerberos support
+
+=head1 SYNOPSIS
+
+run kinit first for getting your credentials cache in order, then (example for
+communicating with a secure HiveServer2 instance):
+
+    use Authen::SASL qw(XS);
+    my $sasl = Authen::SASL->new( mechanism => 'GSSAPI');
+
+    use Thrift::Socket;
+    use Thrift::BufferedTransport;
+    use Thrift::SASL::Transport;
+    use Thrift::API::HiveClient2;
+
+    my $socket = Thrift::Socket->new( $srv_host, 10000 );
+    my $strans = Thrift::SASL::Transport->new(
+        Thrift::BufferedTransport->new($socket),
+        $sasl,
+        $debuglevel
+    );
+
+    my $hive = Thrift::API::HiveClient2->new(
+        _socket    => $socket,
+        _transport => $strans,
+    );
+
+=head1 DESCRIPTION
+
+Add SASL support to Apache's Thrift, in order to support Kerberos auth, among
+others. Highly experimental and hack-ish. Ideally this should be part of the
+Thrift distribution, once proven to work reliably.
+
+=head1 ACKNOWLEDGEMENTS
+
+Based on the pyhs2 python module by Brad Ruderman L<https://github.com/BradRuderman/pyhs2>
+
+Initial version with simple SASL authentication (LDAP) developped by Vikentiy Fesunov at Booking.com
+
+Thanks to my employer Booking.com to allow me to release this module for public use
+
