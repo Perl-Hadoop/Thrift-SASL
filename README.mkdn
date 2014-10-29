@@ -4,7 +4,7 @@ Thrift::SASL::Transport - Thrift Transport allowing Kerberos auth/encryption thr
 
 # VERSION
 
-version 0.002
+version 0.003
 
 # SYNOPSIS
 
