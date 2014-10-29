@@ -39,7 +39,7 @@ sub new {
     return bless {
         _transport => $transport,
         _sasl      => $sasl,
-        _debug     => $debug,
+        _debug     => $debug || 0,
     }, $class;
 }
 
