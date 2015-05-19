@@ -76,6 +76,12 @@ sub open {
     return $self->{_sasl_client} || $self->_sasl_handshake;
 }
 
+sub close {
+    my ($self) = @_;
+    $self->{_transport}->close if $self->{_transport} && $self->isOpen;
+    return 1;
+}
+
 sub _sasl_handshake {
     my ($self) = @_;
 
