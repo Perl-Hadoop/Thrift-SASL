@@ -110,17 +110,49 @@ sub _sasl_handshake {
             #$client->client_step($data // '') if $client->need_step;
             last;
         }
+
+        my $extra_msg = $self->__probe_env_and_xs_sasl_bug( $client );
+
         if ( $code == SASL_BAD || $code == SASL_ERROR ) {
-            die "Authentication failed: $code > $data";
+            die sprintf "Authentication failed: %s > %s%s",
+                            $code,
+                            $data,
+                            $extra_msg ? '. ' . $extra_msg : '',
+            ;
         }
+
         $resp = $client->client_step($data);
-        die "Client rejected authentication" unless defined $data;
+        if ( ! defined $data ) {
+            die sprintf 'Client rejected authentication%s',
+                            $extra_msg ? '. ' . $extra_msg : '',
+            ;
+        }
     }
 
     $self->{_sasl_encode_check} = 1;
     $self->{_sasl_client}       = $client;
 
     return $self->{_sasl_client};
+}
+
+sub __probe_env_and_xs_sasl_bug {
+    # See: https://github.com/Perl-Hadoop/Thrift-SASL/issues/1
+    #
+    my($self, $client) = @_;
+    return if      ! $client->isa('Authen::SASL::XS')
+                && ! $client->isa('Authen::SASL::Cyrus')
+    ;
+
+    return if exists $ENV{USER} || exists $ENV{USERNAME};
+
+    my $sasl_class = ref $client;
+
+    return join ' ',
+        "cyrus-sasl and in turn $sasl_class needs either USER or USERNAME",
+        'environment variable to be present and they seem to be missing',
+        'in your environment.',
+        'The error you have received might be caused by that.',
+    ;
 }
 
 sub write {
