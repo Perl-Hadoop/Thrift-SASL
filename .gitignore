@@ -1,0 +1,11 @@
+extlib
+blib
+pm_to_blib
+MANIFEST
+Makefile
+MyMETA*
+inc/
+.build/
+Thrift-SASL-Transport-*.tar.gz
+*~
+cpanfile.snapshot
