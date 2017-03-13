@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-# VERSION
-
 # Nasty hack to make the Thrift libs handle the extra 4-bytes
 # header put by GSSAPI in front of unencoded (auth only) replies
 
@@ -293,3 +291,20 @@ Initial version with simple SASL authentication (LDAP) developped by Vikentiy Fe
 
 Thanks to my employer Booking.com to allow me to release this module for public use
 
+=for Pod::Coverage BinaryProtocolOverride_readMessageBegin
+
+=for Pod::Coverage close
+
+=for Pod::Coverage flush
+
+=for Pod::Coverage isOpen
+
+=for Pod::Coverage new
+
+=for Pod::Coverage open
+
+=for Pod::Coverage read
+
+=for Pod::Coverage readAll
+
+=for Pod::Coverage write
