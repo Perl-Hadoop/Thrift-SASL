@@ -6,6 +6,6 @@ Makefile
 MyMETA*
 inc/
 .build/
-Thrift-SASL-Transport-*.tar.gz
+Thrift-SASL-Transport-*
 *~
 cpanfile.snapshot
