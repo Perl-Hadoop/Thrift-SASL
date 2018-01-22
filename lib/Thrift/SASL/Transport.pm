@@ -33,10 +33,11 @@ use constant {
 };
 
 sub new {
-    my ( $class, $transport, $sasl, $debug ) = @_;
+    my ( $class, $transport, $sasl, $principal, $debug ) = @_;
     return bless {
         _transport => $transport,
         _sasl      => $sasl,
+        _principal => $principal || sprintf 'hive/%s@REALM.COM',$transport->{transport}{host},
         _debug     => $debug || 0,
     }, $class;
 }
@@ -89,7 +90,20 @@ sub _sasl_handshake {
 
     # The socket passed to BufferedTransport was put in that object's
     # "transport" property, this is a bit confusing imho
-    my $client = $self->{_sasl}->client_new( 'hive', $self->{_transport}{transport}{host} );
+    my $client;
+    if($self->{_sasl}->mechanism eq 'GSSAPI'){
+        my @kerberos_name_split = split('[/@]', $self->{_principal});
+        if(scalar @kerberos_name_split != 3){
+            die "Kerberos principal name should have 3 parts. Eg: hive/_HOST\@REALM.COM";
+        }
+        $client = $self->{_sasl}->client_new( $kerberos_name_split[0], $kerberos_name_split[1] );
+    }elsif($self->{_sasl}->mechanism eq 'DIGEST-MD5'){
+        # Server is configured with null and default for authentication with delegationtoken.
+        $client = $self->{_sasl}->client_new( 'null', 'default' );
+    }else{
+        #Keeping this line here for keep support for other mechanisms.
+        $client = $self->{_sasl}->client_new( 'hive', $self->{_transport}{transport}{host} );
+    }
     my $resp = $client->client_start();
 
     my $step;
