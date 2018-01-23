@@ -33,12 +33,12 @@ use constant {
 };
 
 sub new {
-    my ( $class, $transport, $sasl, $principal, $debug ) = @_;
+    my ( $class, $transport, $sasl, $debug, $principal ) = @_;
     return bless {
         _transport => $transport,
         _sasl      => $sasl,
-        ($principal ? (_principal => $principal): ()),
         _debug     => $debug || 0,
+        ($principal ? (_principal => $principal): ()),
     }, $class;
 }
 
