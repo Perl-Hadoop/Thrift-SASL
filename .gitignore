@@ -9,3 +9,4 @@ inc/
 Thrift-SASL-Transport-*
 *~
 cpanfile.snapshot
+.idea/
