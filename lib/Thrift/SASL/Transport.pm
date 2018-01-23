@@ -37,7 +37,7 @@ sub new {
     return bless {
         _transport => $transport,
         _sasl      => $sasl,
-        _principal => $principal || sprintf 'hive/%s@REALM.COM',$transport->{transport}{host},
+        ($principal ? (_principal => $principal): ()),
         _debug     => $debug || 0,
     }, $class;
 }
@@ -92,6 +92,9 @@ sub _sasl_handshake {
     # "transport" property, this is a bit confusing imho
     my $client;
     if($self->{_sasl}->mechanism eq 'GSSAPI'){
+        if(!$self->{_principal}){
+            die "Principal needs to be specified for kerberos authentication."
+        }
         my @kerberos_name_split = split('[/@]', $self->{_principal});
         if(scalar @kerberos_name_split != 3){
             die "Kerberos principal name should have 3 parts. Eg: hive/_HOST\@REALM.COM";
